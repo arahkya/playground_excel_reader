@@ -2,12 +2,15 @@
 #include <chrono>
 #include "Services/ExcelService.h"
 #include "libs/OpenXLSX/OpenXLSX.hpp"
+#include "Models/DisputeModel.h"
+#include <stack>
 
 using namespace std;
 using namespace Services;
 using namespace OpenXLSX;
+using namespace Models;
 
-void ReadExcelFile(string excelFile)
+std::stack<Models::DisputeModel> ReadExcelFile(string excelFile)
 {
     XLDocument doc;
     doc.open(excelFile);
@@ -16,18 +19,20 @@ void ReadExcelFile(string excelFile)
 
     int totalRows = wks.rowCount();
 
+    std::stack<Models::DisputeModel> disputes;
+
     for (int i = 2; i < totalRows; i++)
     {
         XLCellValue createDateCellValue = wks.cell("B" + to_string(i)).value();
         XLCellValue termIdCellValue = wks.cell("H" + to_string(i)).value();
         XLCellValue branchCellValue = wks.cell("I" + to_string(i)).value();
 
-        cout << "RowNo: " + to_string(i) 
-             << ", Create Date: " + createDateCellValue.get<string>() 
-             << ", Term Id: " + termIdCellValue.get<string>() 
-             << ", Branch: " + branchCellValue.get<string>() 
-             << endl;
+        Models::DisputeModel dispute(createDateCellValue.get<string>(), branchCellValue.get<string>(), termIdCellValue.get<string>());
+
+        disputes.push(dispute);
     }
+
+    return disputes;
 }
 
 void CreateExcelFile()
@@ -53,7 +58,16 @@ int main()
 
     string excelFile = "/Users/arahkyambubpah/Sources/Playgrounds/C++/ExcelReader/files/DisputeATM_01-260124.xlsx";
 
-    ReadExcelFile(excelFile);
+    std::stack<Models::DisputeModel> models = ReadExcelFile(excelFile);
+
+    for(int i = 0; i < models.size(); i++)
+    {
+        Models::DisputeModel dispute = models.top();
+
+        std::cout << dispute.GetBranch() << std::endl;
+
+        models.pop();
+    }
 
     return 0;
 }

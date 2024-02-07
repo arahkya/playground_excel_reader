@@ -14,7 +14,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output)
 add_subdirectory(libs/OpenXLSX)
 
 # Add executable target with source files listed in SOURCE_FILES variable
-set(SOURCE_FILES main.cpp Services/ExcelService.cpp)
+set(SOURCE_FILES main.cpp Services/ExcelService.cpp Models/DisputeModel.h)
 add_executable(ExcelReader ${SOURCE_FILES})
 
 
